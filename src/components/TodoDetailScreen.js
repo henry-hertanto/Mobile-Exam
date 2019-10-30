@@ -62,8 +62,8 @@ const TodoDetailScreen = props => {
                     </Text>
                 </CardItem>
                 <CardItem>
-                    <Button info>
-                        <Text onPress={onClickBack} >Go Back</Text>
+                    <Button success>
+                        <Text onPress={onClickBack} >Back</Text>
                     </Button>
                     <Button danger>
                         <Text onPress={onClickDelete} >Delete</Text>
