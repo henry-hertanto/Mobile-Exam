@@ -74,4 +74,4 @@ const TodoDetailScreen = props => {
     )
 }
 
-export default TodoDetailScreen
+export default TodoDetailScreen  
