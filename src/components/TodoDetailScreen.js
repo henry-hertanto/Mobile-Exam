@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import firebase from 'firebase'
 
 const TodoDetailScreen = props => {
-
     const [detail, setDetail] = useState({id : '', status : '', dateCreated : '', dateCompleted : '', todo : '' })
     const todoData = useSelector(state => state.todo.todoData);
     const dispatch = useDispatch()
