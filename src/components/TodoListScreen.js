@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { View, Text, TextInput } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { Container, Header, Content, Body, Card, CardItem, Input, Form, Item, Left, Button, Icon, List, ListItem, Right, Title, Badge } from 'native-base'
+import { Container, Header, Content, Body, Card, CardItem, Left, Button, Icon, List, ListItem, Right, Title } from 'native-base'
 import firebase from 'firebase'
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const TodoListScreen = props => {
     const dispatch = useDispatch()
@@ -12,19 +12,27 @@ const TodoListScreen = props => {
 
     useEffect(() => {
         firebase.database().ref('/').once('value', snapshot => {
-            // console.log(snapshot.val())
-            // console.log(Object.values(snapshot.val()))
-            // console.log(todoData)
+            // Handling null
+            if ( snapshot.val() ) {
+                dispatch({ 
+                    type: 'FILL_TODO',
+                    payload: Object.values(snapshot.val())
+                })
+            }
+        })
+    }, [])
+    
+    const refreshList = _ => {
+        firebase.database().ref('/').on('value', snapshot => {
             dispatch({
                 type: 'FILL_TODO',
                 payload: Object.values(snapshot.val())
             })
         })
-    }, [])
+    }
 
     const onAddTodo = () => {
         var newPostKey = firebase.database().ref().push().key
-        // console.log('newpostkey: ', newPostKey)
         firebase.database().ref(`/${newPostKey}`).set({
             todo: todoInput,
             dateCreated: new Date().toLocaleDateString('id-ID'),
@@ -32,51 +40,23 @@ const TodoListScreen = props => {
             status: 'unfinished',
             id: newPostKey
         })
-        .then(result => {
-            // console.log(result)
-        })
         .catch(err => {
             console.log(err)
         })
-
-        firebase.database().ref('/').on('value', snapshot => {
-            // console.log(snapshot.val())
-            // console.log(Object.values(snapshot.val()))
-            // console.log(todoData)
-            dispatch({
-                type: 'FILL_TODO',
-                payload: Object.values(snapshot.val())
-            })
-        })
-    }
-    const onClickFinished = () => {
-        var newPostKey = firebase.database().ref().push().key
-        // console.log('newpostkey: ', newPostKey)
-        firebase.database().ref(`/${newPostKey}`).set({
-            todo: todoInput,
-            dateCreated: new Date().toLocaleDateString('id-ID'),
-            dateCompleted: 'N/A',
-            status: 'finished',
-            id: newPostKey
-        })
-        .then(result => {
-            // console.log(result)
-        })
-        .catch(err => {
-            console.log(err)
-        })
-
-        firebase.database().ref('/').on('value', snapshot => {
-            // console.log(snapshot.val())
-            // console.log(Object.values(snapshot.val()))
-            // console.log(todoData)
-            dispatch({
-                type: 'FILL_TODO',
-                payload: Object.values(snapshot.val())
-            })
-        })
+        refreshList();
     }
 
+    const openDetails = id => {
+        props.navigation.navigate('TodoDetailScreen', { id })
+    }
+
+    const onClickFinished = (id, stat) => {
+        let status = stat === 'finished' ? 'unfinished' : 'finished'
+        firebase.database().ref(`/${id}`).update({
+            status
+        });
+        refreshList()
+    }
 
     return (
         <Container>
@@ -106,16 +86,23 @@ const TodoListScreen = props => {
                     return (
                     <ListItem>
                         <Left>
-                            <Button info style={{ padding: 10 }}>
-                                <Text style={{ color: 'white'}} onPress={onClickFinished}>{item.status}</Text>
-                            </Button> 
+                                { 
+                                    item.status === 'unfinished' ?
+                                    <Button info style={{ padding: 10 }}>
+                                        <Text style={{ color: 'white'}} onPress={ _ => onClickFinished(item.id,item.status) } >{item.status}</Text>
+                                    </Button>
+                                    : 
+                                    <Button success style={{ padding: 10 }}>
+                                        <Text style={{ color: 'white'}} onPress={()=> onClickFinished(item.id,item.status) } >{item.status}</Text>
+                                    </Button>
+                                }
                         </Left>
                         <Body>
                             <Text>{item.todo}</Text>
                         </Body>
                         <Right style={{ width: '100%'}}>
                             <TouchableOpacity>
-                                <Text style={{ color: 'lightblue'}}>Open</Text>
+                                <Text style={{ color: 'lightblue'}} onPress={()=> openDetails(item.id)} >Open</Text>
                             </TouchableOpacity>
                         </Right>
                     </ListItem>
