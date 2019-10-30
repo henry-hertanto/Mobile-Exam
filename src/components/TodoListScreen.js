@@ -49,6 +49,33 @@ const TodoListScreen = props => {
             })
         })
     }
+    const onClickFinished = () => {
+        var newPostKey = firebase.database().ref().push().key
+        // console.log('newpostkey: ', newPostKey)
+        firebase.database().ref(`/${newPostKey}`).set({
+            todo: todoInput,
+            dateCreated: new Date().toLocaleDateString('id-ID'),
+            dateCompleted: 'N/A',
+            status: 'finished',
+            id: newPostKey
+        })
+        .then(result => {
+            // console.log(result)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+
+        firebase.database().ref('/').on('value', snapshot => {
+            // console.log(snapshot.val())
+            // console.log(Object.values(snapshot.val()))
+            // console.log(todoData)
+            dispatch({
+                type: 'FILL_TODO',
+                payload: Object.values(snapshot.val())
+            })
+        })
+    }
 
 
     return (
@@ -80,7 +107,7 @@ const TodoListScreen = props => {
                     <ListItem>
                         <Left>
                             <Button info style={{ padding: 10 }}>
-                                <Text style={{ color: 'white'}}>{item.status}</Text>
+                                <Text style={{ color: 'white'}} onPress={onClickFinished}>{item.status}</Text>
                             </Button> 
                         </Left>
                         <Body>

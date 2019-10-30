@@ -39,6 +39,9 @@ const TodoDetailScreen = props => {
                     </CardItem>
                 </Card>
             {/* </Content> */}
+            <TouchableOpacity>
+                <Text style={{ color: 'red'}}>Delete</Text>
+            </TouchableOpacity>
         </Container>
     )
 }
