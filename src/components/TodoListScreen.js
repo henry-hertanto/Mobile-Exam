@@ -22,7 +22,7 @@ const TodoListScreen = props => {
         })
     }, [])
     
-    const refreshList = _ => {
+    const refreshList = () => {
         firebase.database().ref('/').on('value', snapshot => {
             dispatch({
                 type: 'FILL_TODO',
@@ -89,7 +89,7 @@ const TodoListScreen = props => {
                                 { 
                                     item.status === 'unfinished' ?
                                     <Button info style={{ padding: 10 }}>
-                                        <Text style={{ color: 'white'}} onPress={ _ => onClickFinished(item.id,item.status) } >{item.status}</Text>
+                                        <Text style={{ color: 'white'}} onPress={() => onClickFinished(item.id,item.status) } >{item.status}</Text>
                                     </Button>
                                     : 
                                     <Button success style={{ padding: 10 }}>

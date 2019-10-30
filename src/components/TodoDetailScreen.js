@@ -15,11 +15,11 @@ const TodoDetailScreen = props => {
         todoData.map(item => { if (item.id === id) setDetail(item) })
     }, [])
 
-    const onClickBack = _ => {
+    const onClickBack = () => {
         props.navigation.goBack()
     }
 
-    const onClickDelete = _ => {
+    const onClickDelete = () => {
         firebase.database().ref(`/${detail.id}`).remove()
         .catch(err => {
             console.log(err)
